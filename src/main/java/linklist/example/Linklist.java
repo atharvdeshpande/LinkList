@@ -1,116 +1,134 @@
 package linklist.example;
 
-public class Linklist<t> {
-    class Node{
-        t value;
-        Node left;
-        Node(t value)
+
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.Objects;
+
+public class Linklist<V> {
+    private static class Node<V>{
+        V value;
+        Node<V> left;
+        Node(V value)
         {
             this.value=value;
         }
     }
-    private Node head;
-    private Node tail;
-    public void AddFirst(t value)
+    public static final String EMPTY ="List is empty";
+    private static final Logger logger = LogManager.getLogger(Linklist.class);
+    private Node<V> head;
+    private Node<V> tail;
+    public void addFirst(V value)
     {
-        if(isempty())
+        if(isEmpty())
         {
-            head=new Node(value);
+            head=new Node<>(value);
             tail=head;
             return;
         }
-        Node n=new Node(value);
+        Node<V> n=new Node<>(value);
         n.left=head;
         head=n;
     }
-    public void AddLast(t value)
+    public void addLast(V value)
     {
-        if(isempty())
+        if(isEmpty())
         {
-            head=new Node(value);
+            head=new Node<>(value);
             tail=head;
             return;
         }
-        Node n=new Node(value);
+        Node<V> n=new Node<>(value);
         tail.left=n;
         tail=n;
     }
-    public void add(int pos,t value)
+    public void add(int pos, V value)
     {
         if(pos==1){
-            AddFirst(value);
+            addFirst(value);
         }
-        Node current=head;
+        Node<V> current=head;
         int c=1;
         while(c<(pos-1))
         {
             c++;
             current=current.left;
         }
-        Node n=new Node(value);
+        Node<V> n=new Node<>(value);
         n.left=current.left;
         current.left=n;
     }
-    public t DelFirst(){
-        if(isempty()){
-            System.out.println("List is Empty");
+    public V delFirst(){
+        if(isEmpty()){
+            logger.info(EMPTY);
         }
-        Node current=head;
+        Node<V> current=head;
         head=head.left;
         current.left=null;
-        if(isempty())
+        if(isEmpty())
         {
             tail=null;
         }
         return current.value;
     }
-    public t DelLast(){
-        if(isempty()){
-            System.out.println("List is Empty");
+    public V delLast(){
+        if(isEmpty()){
+            logger.info(EMPTY);
         }
         if (head==tail)
         {
-            t val=head.value;
+            V val=head.value;
             head=null;
             tail=null;
             return val;
         }
-        Node current=head;
-        Node prev=null;
+        Node<V> current=head;
+        Node<V> prev=null;
         while (current.left != null)
         {
             prev=current;
             current=current.left;
         }
-        prev.left=null;
+        Objects.requireNonNull(prev).left=null;
         tail=prev;
         return current.value;
     }
 
-    public t delete(int pos)
+    public V delete(int pos)
     {
-        if(isempty()){
-            System.out.println("List is Empty");
+        if(isEmpty()){
+            logger.info(EMPTY);
         }
         if (pos==1)
         {
-            DelFirst();
+            return delFirst();
         }
-        Node current=head;
-        Node pre=null;
+        Node<V> current=head;
+        Node<V> pre=null;
         int c=1;
-        while(c<pos)
+        while(current.left != null)
         {
             c++;
             pre=current;
             current=current.left;
+            if(c==pos)
+            {
+                break;
+            }
         }
-        pre.left=current.left;
-        current.left=null;
-        return current.value;
+        if (c==pos) {
+            Objects.requireNonNull(pre).left = current.left;
+            current.left = null;
+            return current.value;
+        }
+        else {
+            return null;
+        }
     }
 
-    public boolean isempty(){
+    public boolean isEmpty(){
         return head==null;
     }
 }
